@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+import os
+from flask import Flask
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
@@ -9,5 +10,9 @@ def handle_message(message):
     print("Received:", message)
     socketio.send(message, broadcast=True)
 
+if __name__ != "__main__":  # Gunicorn import fix
+    gunicorn_app = app  # Gunicorn needs a callable Flask app
+
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=80, debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Use Render's assigned port
+    socketio.run(app, host="0.0.0.0", port=port)
